@@ -1,6 +1,9 @@
 <?php
 require_once 'config/database.php';
-session_start();
+// Only start session for navigation bar if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $is_member = false;
 if (isset($_SESSION['user_id'])) {
@@ -584,65 +587,41 @@ if (isset($_SESSION['user_id'])) {
         <div class="copyright">© Moonlight Photos 2025</div>
     </footer>
 
-    <script src="static/js/auth.js"></script>
     <script>
-        // Check if user is logged in
-        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        const becomeMemberBtn = document.querySelector('.become-member-btn');
-        const pointsView = document.getElementById('pointsView');
-        const rewardsContent = document.getElementById('rewardsContent');
-        const learnMoreLink = document.getElementById('learnMoreLink');
+    // Remove all localStorage and currentUser related code
+    // Only keep the dropdown and overlay logic
 
-        if (currentUser) {
-            // Update button text
-            becomeMemberBtn.textContent = 'View Points';
-            
-            // Add click handler for View Points button
-            becomeMemberBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                pointsView.classList.add('show');
-                rewardsContent.classList.add('hide');
-            });
+    document.addEventListener('DOMContentLoaded', function() {
+      var userMenu = document.getElementById('userMenu');
+      var userMenuContent = document.getElementById('userMenuContent');
+      if (userMenu && userMenuContent) {
+        userMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+          userMenuContent.classList.toggle('show');
+        });
+        document.addEventListener('click', function() {
+          userMenuContent.classList.remove('show');
+        });
+      }
+    });
 
-            // Add click handler for Learn More link
-            learnMoreLink.addEventListener('click', (e) => {
+    document.addEventListener('DOMContentLoaded', function() {
+        var viewPointsBtn = document.getElementById('viewPointsBtn');
+        var pointsView = document.getElementById('pointsView');
+        var learnMoreLink = document.getElementById('learnMoreLink');
+        if (viewPointsBtn && pointsView) {
+            viewPointsBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                pointsView.classList.remove('show');
-                rewardsContent.classList.remove('hide');
+                pointsView.style.display = 'block';
             });
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-          var userMenu = document.getElementById('userMenu');
-          var userMenuContent = document.getElementById('userMenuContent');
-          if (userMenu && userMenuContent) {
-            userMenu.addEventListener('click', function(e) {
-              e.stopPropagation();
-              userMenuContent.classList.toggle('show');
+        if (learnMoreLink && pointsView) {
+            learnMoreLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                pointsView.style.display = 'none';
             });
-            document.addEventListener('click', function() {
-              userMenuContent.classList.remove('show');
-            });
-          }
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            var viewPointsBtn = document.getElementById('viewPointsBtn');
-            var pointsView = document.getElementById('pointsView');
-            var learnMoreLink = document.getElementById('learnMoreLink');
-            if (viewPointsBtn && pointsView) {
-                viewPointsBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    pointsView.style.display = 'block';
-                });
-            }
-            if (learnMoreLink && pointsView) {
-                learnMoreLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    pointsView.style.display = 'none';
-                });
-            }
-        });
+        }
+    });
     </script>
 </body>
 </html> 
