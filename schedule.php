@@ -1,5 +1,6 @@
 <?php
 require_once 'config/database.php';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -428,7 +429,16 @@ require_once 'config/database.php';
             <a href="gift-card.php">Gift Card</a>
             <a href="book-now.php">Book Now</a>
             <div id="authLinks">
-                <a href="login.php" id="loginLink">Log in</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <div class="user-menu" id="userMenu">
+                        <span class="user-name" id="userName"><?php echo htmlspecialchars($_SESSION['name']); ?></span>
+                        <div class="user-menu-content" id="userMenuContent">
+                            <a href="logout.php" class="logout-btn">Log out</a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a href="login.php" id="loginLink">Log in</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -622,7 +632,7 @@ require_once 'config/database.php';
             const time = selectedTimeElement.textContent;
 
             // Redirect to payment page with booking details
-            window.location.href = `booking-payment.html?package=${encodeURIComponent(packageName)}&branch=${encodeURIComponent(branchName)}&date=${encodeURIComponent(formattedDate)}&time=${encodeURIComponent(time)}&price=${encodeURIComponent(price)}&source=booking`;
+            window.location.href = `booking-payment.php?package=${encodeURIComponent(packageName)}&branch=${encodeURIComponent(branchName)}&date=${encodeURIComponent(formattedDate)}&time=${encodeURIComponent(time)}&price=${encodeURIComponent(price)}&source=booking`;
         }
 
         // Simple calendar implementation
@@ -694,6 +704,20 @@ require_once 'config/database.php';
         document.getElementById('nextMonth').addEventListener('click', function() {
                 currentDate.setMonth(currentDate.getMonth() + 1);
             generateCalendar(currentDate);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var userMenu = document.getElementById('userMenu');
+            var userMenuContent = document.getElementById('userMenuContent');
+            if (userMenu && userMenuContent) {
+                userMenu.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userMenuContent.classList.toggle('show');
+                });
+                document.addEventListener('click', function() {
+                    userMenuContent.classList.remove('show');
+                });
+            }
         });
     </script>
 </body>
