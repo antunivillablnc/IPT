@@ -1,6 +1,15 @@
 <?php
 require_once 'config/database.php';
 session_start();
+
+$is_member = false;
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+    $result = mysqli_query($conn, "SELECT is_member FROM users WHERE user_id = $user_id");
+    if ($row = mysqli_fetch_assoc($result)) {
+        $is_member = $row['is_member'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -492,7 +501,11 @@ session_start();
         <section class="hero-banner">
             <h1 class="hero-title">Annyeong loyalty rewards</h1>
             <p class="hero-subtitle">Earn points and turn them into rewards</p>
-            <a href="#" class="become-member-btn">Become a Member</a>
+            <?php if ($is_member): ?>
+                <a href="#" class="become-member-btn">View Points</a>
+            <?php else: ?>
+                <a href="#" class="become-member-btn">Become a Member</a>
+            <?php endif; ?>
         </section>
 
         <!-- Features Section -->
