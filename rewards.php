@@ -1,5 +1,6 @@
 <?php
 require_once 'config/database.php';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -409,6 +410,15 @@ require_once 'config/database.php';
         .rewards-content.hide {
             display: none;
         }
+
+        .disabled {
+     pointer-events: none !important;
+     opacity: 0.6;
+     cursor: not-allowed;
+     user-select: none;
+     text-decoration: none;
+     color: #999 !important;
+   }
     </style>
 </head>
 <body>

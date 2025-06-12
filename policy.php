@@ -1,5 +1,6 @@
 <?php
 require_once 'config/database.php';
+session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -308,10 +309,24 @@ require_once 'config/database.php';
             <a href="index.php">Home</a>
             <a href="faq.php">FAQ</a>
             <a href="rewards.php">Rewards</a>
-            <a href="gift-card.php">Gift Card</a>
-            <a href="book-now.php">Book Now</a>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <a href="gift-card.php">Gift Card</a>
+                <a href="book-now.php">Book Now</a>
+            <?php else: ?>
+                <span class="disabled">Gift Card</span>
+                <span class="disabled">Book Now</span>
+            <?php endif; ?>
             <div id="authLinks">
-                <a href="login.php" id="loginLink">Log in</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <div class="user-menu" id="userMenu">
+                        <span class="user-name" id="userName"><?php echo htmlspecialchars($_SESSION['name']); ?></span>
+                        <div class="user-menu-content" id="userMenuContent">
+                            <a href="logout.php" class="logout-btn">Log out</a>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <a href="login.php" id="loginLink">Log in</a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -400,5 +415,20 @@ require_once 'config/database.php';
         <div class="copyright">© Moonlight Photos 2025</div>
     </footer>
     <script src="static/js/auth.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var userMenu = document.getElementById('userMenu');
+        var userMenuContent = document.getElementById('userMenuContent');
+        if (userMenu && userMenuContent) {
+            userMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+                userMenuContent.classList.toggle('show');
+            });
+            document.addEventListener('click', function() {
+                userMenuContent.classList.remove('show');
+            });
+        }
+    });
+    </script>
 </body>
 </html> 
