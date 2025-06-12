@@ -43,6 +43,16 @@ session_start();
             vertical-align: middle;
         }
 
+        .disabled {
+    pointer-events: none !important;
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+    user-select: none !important;
+    text-decoration: none !important;
+    color: #999 !important;
+    background: none !important;
+}
+
         .nav-links {
             display: flex;
             gap: 3rem;
@@ -551,7 +561,11 @@ session_start();
                 </div>
                 <div>
                     <span class="package-price">₱899</span>
-                    <a href="schedule.php?package=Lunar%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="schedule.php?package=Lunar%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php else: ?>
+                        <span class="book-now-btn disabled">Book Now</span>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -566,7 +580,11 @@ session_start();
                 </div>
                 <div>
                     <span class="package-price">₱1,199</span>
-                    <a href="schedule.php?package=Nocturnal%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="schedule.php?package=Nocturnal%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php else: ?>
+                        <span class="book-now-btn disabled">Book Now</span>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -581,7 +599,11 @@ session_start();
                 </div>
                 <div>
                     <span class="package-price">₱1,599</span>
-                    <a href="schedule.php?package=Twilight%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="schedule.php?package=Twilight%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php else: ?>
+                        <span class="book-now-btn disabled">Book Now</span>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -596,7 +618,11 @@ session_start();
                 </div>
                 <div>
                     <span class="package-price">₱1,999</span>
-                    <a href="schedule.php?package=Celestial%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="schedule.php?package=Celestial%20Package&branch=Tanauan" class="book-now-btn">Book Now</a>
+                    <?php else: ?>
+                        <span class="book-now-btn disabled">Book Now</span>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

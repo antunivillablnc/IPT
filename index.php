@@ -414,11 +414,11 @@ ini_set('display_errors', 1);
     <p class="booking-subtitle">select a branch below</p>
 
     <div class="branch-grid">
-      <div class="branch-card" onclick="window.location.href='tanauan.html';">
+      <div class="branch-card" onclick="window.location.href='tanauan.php';">
         <img src="static\Tanauan.jpg" alt="Tanauan City Branch" class="branch-image">
         <div class="branch-name">TANAUAN CITY</div>
       </div>
-      <div class="branch-card" onclick="window.location.href='sto-tomas.html';">
+      <div class="branch-card" onclick="window.location.href='sto-tomas.php';">
         <img src="static\SM STO..jpg" alt="Sto. Tomas City Branch" class="branch-image">
         <div class="branch-name">STO. TOMAS CITY</div>
       </div>
