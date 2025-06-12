@@ -463,7 +463,7 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="notification" id="notification">Successfully logged in!</div>
 
-    <div class="points-view" id="pointsView">
+    <div class="points-view" id="pointsView" style="display: none;">
         <h2>Rewards</h2>
         <p>Check out all of the rewards that are available to you.</p>
         
@@ -501,10 +501,10 @@ if (isset($_SESSION['user_id'])) {
         <section class="hero-banner">
             <h1 class="hero-title">Annyeong loyalty rewards</h1>
             <p class="hero-subtitle">Earn points and turn them into rewards</p>
-            <?php if ($is_member): ?>
-                <a href="#" class="become-member-btn">View Points</a>
+            <?php if (!isset($_SESSION['user_id'])): ?>
+                <a href="login.php" class="become-member-btn">Become a Member</a>
             <?php else: ?>
-                <a href="#" class="become-member-btn">Become a Member</a>
+                <a href="#" class="become-member-btn" id="viewPointsBtn">View Points</a>
             <?php endif; ?>
         </section>
 
@@ -624,6 +624,24 @@ if (isset($_SESSION['user_id'])) {
               userMenuContent.classList.remove('show');
             });
           }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var viewPointsBtn = document.getElementById('viewPointsBtn');
+            var pointsView = document.getElementById('pointsView');
+            var learnMoreLink = document.getElementById('learnMoreLink');
+            if (viewPointsBtn && pointsView) {
+                viewPointsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    pointsView.style.display = 'block';
+                });
+            }
+            if (learnMoreLink && pointsView) {
+                learnMoreLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    pointsView.style.display = 'none';
+                });
+            }
         });
     </script>
 </body>
