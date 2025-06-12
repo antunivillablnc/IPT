@@ -1,0 +1,67 @@
+/* User Menu Styles */
+.user-menu {
+    position: relative;
+    cursor: pointer;
+}
+
+.user-menu-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    padding: 0.5rem 0;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.user-menu-content.show {
+    display: block;
+}
+
+.user-menu-content a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #4a4a4a;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.user-menu-content a:hover {
+    background-color: #f5f5f5;
+}
+
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Disabled State */
+.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed !important;
+}
+
+a.disabled {
+    color: #999 !important;
+    text-decoration: none !important;
+} 
