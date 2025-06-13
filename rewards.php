@@ -609,16 +609,19 @@ if (isset($_SESSION['user_id'])) {
         var viewPointsBtn = document.getElementById('viewPointsBtn');
         var pointsView = document.getElementById('pointsView');
         var learnMoreLink = document.getElementById('learnMoreLink');
-        if (viewPointsBtn && pointsView) {
+        var rewardsContent = document.getElementById('rewardsContent');
+        if (viewPointsBtn && pointsView && rewardsContent) {
             viewPointsBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 pointsView.style.display = 'block';
+                rewardsContent.classList.add('hide');
             });
         }
-        if (learnMoreLink && pointsView) {
+        if (learnMoreLink && pointsView && rewardsContent) {
             learnMoreLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 pointsView.style.display = 'none';
+                rewardsContent.classList.remove('hide');
             });
         }
     });
