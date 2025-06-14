@@ -1,6 +1,38 @@
 <?php
 require_once 'config/database.php';
 session_start();
+
+// Get booking details from URL
+$package = $_GET['package'] ?? '';
+$branch = $_GET['branch'] ?? '';
+$date = $_GET['date'] ?? '';
+$time = $_GET['time'] ?? '';
+$price = $_GET['price'] ?? '';
+$source = $_GET['source'] ?? '';
+
+// Insert into sessions table if all required data is present and no duplicate exists
+if ($package && $branch && $price && $date && $time) {
+    $duration = 1; // Assuming 1 hour session
+    $available_dates = $date . ' ' . $time;
+
+    // Check for existing session with same branch, package, date, and time
+    $check_stmt = mysqli_prepare($conn, "SELECT session_id FROM sessions WHERE branch = ? AND package = ? AND available_dates = ?");
+    mysqli_stmt_bind_param($check_stmt, "sss", $branch, $package, $available_dates);
+    mysqli_stmt_execute($check_stmt);
+    mysqli_stmt_store_result($check_stmt);
+    if (mysqli_stmt_num_rows($check_stmt) > 0) {
+        // Redirect back to schedule.php with error
+        header("Location: schedule.php?error=slot-taken&package=" . urlencode($package) . "&branch=" . urlencode($branch));
+        exit();
+    }
+    mysqli_stmt_close($check_stmt);
+
+    // No duplicate, insert new session
+    $insert_stmt = mysqli_prepare($conn, "INSERT INTO sessions (branch, package, price, duration, available_dates) VALUES (?, ?, ?, ?, ?)");
+    mysqli_stmt_bind_param($insert_stmt, "ssdis", $branch, $package, $price, $duration, $available_dates);
+    mysqli_stmt_execute($insert_stmt);
+    mysqli_stmt_close($insert_stmt);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -466,15 +498,23 @@ session_start();
             <div class="booking-section">
                 <h2 class="section-title">Booking Details</h2>
 
-                <form id="bookingForm">
+                <form id="bookingForm" action="booking-payment.php" method="get">
+                    <!-- Hidden fields to pass booking details -->
+                    <input type="hidden" name="package" value="<?php echo htmlspecialchars($package); ?>">
+                    <input type="hidden" name="branch" value="<?php echo htmlspecialchars($branch); ?>">
+                    <input type="hidden" name="date" value="<?php echo htmlspecialchars($date); ?>">
+                    <input type="hidden" name="time" value="<?php echo htmlspecialchars($time); ?>">
+                    <input type="hidden" name="price" value="<?php echo htmlspecialchars($price); ?>">
+                    <input type="hidden" name="source" value="<?php echo htmlspecialchars($source); ?>">
+
                     <div class="form-group">
                         <label class="form-label required">Name</label>
-                        <input type="text" class="form-input" required>
+                        <input type="text" class="form-input" name="name" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label required">Email</label>
-                        <input type="email" class="form-input" required>
+                        <input type="email" class="form-input" name="email" required>
                     </div>
 
                     <div class="form-group">
@@ -483,13 +523,13 @@ session_start();
                             <select class="form-input country-select">
                                 <option value="PH">🇵🇭 +63</option>
                             </select>
-                            <input type="tel" class="form-input" placeholder="Phone number">
+                            <input type="tel" class="form-input" name="contact" placeholder="Phone number" required>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label required">Choose your preferred backdrop below and type it in. (Lunar - 1 backdrop / Noctural & Twilight- 3 backdrops)</label>
-                        <textarea class="form-input" rows="4" required></textarea>
+                        <textarea class="form-input" rows="4" name="requests" required></textarea>
 
                         <div class="backdrop-info">
                             <ul class="backdrop-list">
@@ -501,7 +541,7 @@ session_start();
                     </div>
 
                     <div class="policy-checkbox">
-                        <input type="checkbox" id="policyAgreement" required>
+                        <input type="checkbox" id="policyAgreement" name="policyAgreement" required>
                         <label for="policyAgreement">I have read and agree to Annyeong Studio <a href="#" class="view-policy">Booking Policy</a></label>
                     </div>
                 </form>
@@ -521,7 +561,7 @@ session_start();
                 </div>
             </div>
 
-            <button type="submit" form="bookingForm" class="book-now-btn" id="bookNowBtn">Book Now</button>
+            <button type="submit" form="bookingForm" class="book-now-btn" id="bookNowBtn">Proceed to Payment</button>
             <div id="successMessage" class="success-message">
                 Booking successful! 🎉<br>
                 Redirecting you to the home page...
@@ -614,7 +654,15 @@ session_start();
         }
         
         if (branch) {
-            addSummaryItem('Studio Location', `${branch} City`);
+            let locationDisplay = '';
+            if (branch === 'Tanauan') {
+                locationDisplay = 'Tanauan City';
+            } else if (branch === 'Sto. Tomas') {
+                locationDisplay = 'Sto. Tomas City';
+            } else {
+                locationDisplay = branch;
+            }
+            addSummaryItem('Studio Location', locationDisplay);
         }
         
         if (datetime) {
@@ -658,12 +706,9 @@ session_start();
 
         // Form submission
         document.getElementById('bookingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
             // Validate required fields
             const requiredFields = this.querySelectorAll('[required]');
             let isValid = true;
-            
             requiredFields.forEach(field => {
                 if (!field.value.trim()) {
                     isValid = false;
@@ -672,14 +717,11 @@ session_start();
                     field.style.borderColor = '#ddd';
                 }
             });
-
             if (!isValid) {
+                e.preventDefault(); // Only prevent if invalid
                 alert('Please fill in all required fields');
-                return;
             }
-
-            // Add your form submission logic here
-            console.log('Form submitted successfully');
+            // If valid, form will submit to booking-payment.php
         });
 
         // Reset field styling on input
@@ -687,19 +729,6 @@ session_start();
             input.addEventListener('input', function() {
                 this.style.borderColor = '#ddd';
             });
-        });
-
-        document.getElementById('bookNowBtn').addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent form submission if button is within a form
-            
-            // Show success message
-            const successMessage = document.getElementById('successMessage');
-            successMessage.classList.add('show');
-            
-            // Redirect to home page after 2 seconds
-            setTimeout(() => {
-                window.location.href = "index.php";
-            }, 2000);
         });
 
         document.addEventListener('DOMContentLoaded', function() {

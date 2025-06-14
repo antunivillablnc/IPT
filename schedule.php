@@ -1,6 +1,30 @@
 <?php
 require_once 'config/database.php';
 session_start();
+
+// Get selected branch and package from URL or default
+$selectedBranch = $_GET['branch'] ?? '';
+$selectedPackage = $_GET['package'] ?? '';
+
+// Fetch all booked times for this branch and package for the current month
+$bookedSlots = [];
+if ($selectedBranch && $selectedPackage) {
+    $stmt = mysqli_prepare($conn, "SELECT available_dates FROM sessions WHERE branch = ? AND package = ?");
+    mysqli_stmt_bind_param($stmt, "ss", $selectedBranch, $selectedPackage);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_bind_result($stmt, $available_dates);
+    while (mysqli_stmt_fetch($stmt)) {
+        // Split available_dates into date and time
+        $parts = explode(' ', $available_dates);
+        $time = array_slice($parts, -2);
+        $date = implode(' ', array_slice($parts, 0, -2));
+        $bookedSlots[] = [
+            'date' => trim($date),
+            'time' => implode(' ', $time)
+        ];
+    }
+    mysqli_stmt_close($stmt);
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -443,6 +467,12 @@ session_start();
         </div>
     </nav>
 
+    <?php if (isset($_GET['error']) && $_GET['error'] === 'slot-taken'): ?>
+        <div style="background:#ffe0e0;color:#b30000;padding:1rem;margin:1rem 0;border-radius:6px;text-align:center;font-weight:500;">
+            Sorry, this date and time slot is already booked. Please choose another schedule.
+        </div>
+    <?php endif; ?>
+
     <div class="main-content">
         <div class="schedule-container">
             <a href="javascript:void(0)" class="back-button" onclick="goBack()">
@@ -621,7 +651,7 @@ session_start();
             }
 
             const packageName = document.getElementById('packageName').textContent;
-            const branchName = document.getElementById('branchName').textContent.split(',')[0];
+            const branch = urlParams.get('branch');
             const price = document.getElementById('price').textContent.replace('₱', '');
             const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), parseInt(selectedDateElement.textContent));
             const formattedDate = selectedDate.toLocaleDateString('en-US', {
@@ -631,8 +661,8 @@ session_start();
             });
             const time = selectedTimeElement.textContent;
 
-            // Redirect to payment page with booking details
-            window.location.href = `booking-payment.php?package=${encodeURIComponent(packageName)}&branch=${encodeURIComponent(branchName)}&date=${encodeURIComponent(formattedDate)}&time=${encodeURIComponent(time)}&price=${encodeURIComponent(price)}&source=booking`;
+            // Redirect to booking form page with booking details
+            window.location.href = `booking-form.php?package=${encodeURIComponent(packageName)}&branch=${encodeURIComponent(branch)}&date=${encodeURIComponent(formattedDate)}&time=${encodeURIComponent(time)}&price=${encodeURIComponent(price)}&source=booking`;
         }
 
         // Simple calendar implementation

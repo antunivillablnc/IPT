@@ -535,7 +535,7 @@ require_once 'config/database.php';
         // If coming from booking, redirect to schedule page with preserved parameters
         const package = urlParams.get('package');
         const branch = urlParams.get('branch');
-        window.location.href = `schedule.html?package=${encodeURIComponent(package)}&branch=${encodeURIComponent(branch)}`;
+        window.location.href = `schedule.php?package=${encodeURIComponent(package)}&branch=${encodeURIComponent(branch)}`;
       }
     }
 
